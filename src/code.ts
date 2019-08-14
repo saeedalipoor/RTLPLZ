@@ -24,10 +24,10 @@ if (node && node.type === 'TEXT') {
   figma.ui.postMessage({ type: 'init', msg: revertParagraph(node['characters']), nodeType: node.type });
   // figma.ui.postMessage(revertParagraph(node['characters']));
 }
-figma.loadFontAsync({ family: "Tahoma", style: "Regular" });
-figma.ui.onmessage = msg => {
+figma.ui.onmessage = async msg => {
   node = figma.currentPage.selection[0];
   if (node && node.type === 'TEXT') {
+    await figma.loadFontAsync(node.fontName as FontName);
     switch (msg.type) {
       case 'revert-text':
         node['characters'] = revertParagraph(msg.text !== undefined ? msg.text : node['characters'])
