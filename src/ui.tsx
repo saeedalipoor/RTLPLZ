@@ -52,7 +52,7 @@ const App = () => {
 
   }
   const onEditorChange = e => {
-    parent.postMessage({ pluginMessage: { type: 'revert-text', text: e.target.innerText } }, '*');
+    parent.postMessage({ pluginMessage: { type: 'revert-text', text: e.target.innerText.replace(/\n$/, '') } }, '*');
     if (e.keyCode === 65 && e.metaKey) {
       e.preventDefault();
       e.stopPropagation();
