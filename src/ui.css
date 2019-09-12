@@ -10,10 +10,24 @@ body {
   height: 100%;
 }
 
+.wrap-calc {
+  position: fixed;
+  background: #fff;
+  z-index: 10;
+  height: 100%;
+  visibility: hidden;
+  pointer-events: none;
+  direction: rtl;
+}
+
+.wrap-calc span {
+  display: inline-block;
+}
+
 .editor {
   font-family: tahoma;
   flex-grow: 1;
-  padding: 10px;
+  padding: 10px 10px 37px;
   font-size: 16px;
   text-align: right;
   outline: none;
@@ -46,9 +60,76 @@ body {
   justify-content: center;
   align-items: center;
   font-size: 20px;
+  padding-bottom: 112px;
   pointer-events: none;
 }
 
+.hint {
+  background-color: #2c2c2c;
+  color: #aaaaaa;
+  left: 0px;
+  right: 0px;
+  position: fixed;
+  bottom: 0;
+  text-align: left;
+  padding: 8px 12px;
+  border: 1px solid #c0c0c0;
+  border-top: none;
+  z-index: 100;
+  overflow: hidden;
+  max-height: 100px;
+  transition: max-height 0.2s linear;
+}
+
+.hint.hidden:not(:hover) {
+  max-height: 10px;
+}
+
+.hint .title {
+  border-bottom: 1px solid #444444;
+  margin: -8px -12px 10px;
+  color: #959595;
+  font-size: 12px;
+  padding: 6px 12px;
+}
+
+.hint .shortcut {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.hint .shortcut:first-child {
+  margin-top: 0;
+}
+
+.hint .key-comb {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hint .desc {
+  font: normal 400 12px/24px Inter, Roboto, sans-serif;
+}
+
+.key {
+  border: 1px solid #aaa;
+  background: #2c2c2c;
+  color: #aaa;
+  cursor: default;
+  border-radius: 2px;
+  margin-left: 3px;
+  font: normal 400 14px/24px Inter, Roboto, sans-serif;
+  padding: 0 6px;
+  height: 28px;
+  min-width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
 
 [disabled] {
   opacity: 0.3;
