@@ -27,7 +27,7 @@ body {
 .editor {
   font-family: tahoma;
   flex-grow: 1;
-  padding: 10px 10px 37px;
+  padding: 10px;
   font-size: 16px;
   text-align: right;
   outline: none;
@@ -60,7 +60,6 @@ body {
   justify-content: center;
   align-items: center;
   font-size: 20px;
-  padding-bottom: 112px;
   pointer-events: none;
 }
 
@@ -77,7 +76,7 @@ body {
   border-top: none;
   z-index: 100;
   overflow: hidden;
-  max-height: 100px;
+  max-height: 115px;
   transition: max-height 0.2s linear;
 }
 
@@ -121,10 +120,10 @@ body {
   cursor: default;
   border-radius: 2px;
   margin-left: 3px;
-  font: normal 400 14px/24px Inter, Roboto, sans-serif;
-  padding: 0 6px;
-  height: 28px;
-  min-width: 28px;
+  font: normal 400 11px/16px Inter, sans-serif;
+  padding: 1px 4px;
+  height: 22px;
+  min-width: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
