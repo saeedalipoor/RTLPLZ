@@ -14,7 +14,7 @@ function isSpecial(character: string) {
   return character.match(/[\u064b-\u065f]|[\u06D4-\u06DC]|[\u06DF-\u06E8]|[\u06EA-\u06ED]/g);
 }
 function textLayers(selection) {
-  return selection.filter(node => node.type === "TEXT");
+  return selection.filter((node) => node.type === "TEXT");
 }
 function swapSpecialChars(line) {
   let result = line;
@@ -81,12 +81,6 @@ function prepareForWrap(string: string, tempNode) {
     )
     .join("\n");
 }
-function resetLayerText(string: string) {
-  return string
-    .split(" ")
-    .reverse()
-    .join(" ");
-}
 
 async function setLayerText(node: BaseNode, text: string) {
   await loadFonts(node);
@@ -112,8 +106,8 @@ async function resetLayers(selection: PageNode["selection"]) {
     try {
       node.setRelaunchData({});
     } catch (e) {}
-    return;
   }
+  return;
 }
 
 function handleUI({ type, payload }) {
