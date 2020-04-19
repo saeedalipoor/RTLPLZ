@@ -149,8 +149,15 @@ function handleUI({ type, payload }) {
 function checkSelection() {
   const node = figma.currentPage.selection[0];
   if (node && node.type === "TEXT") {
+    const originalText = node.getPluginData("originalText");
+    const currentText = revertText(node["characters"] || '');
+    if(originalText && (originalText.length !== currentText.length || originalText !== currentText)){
+      node.setRelaunchData({});
+      node.setPluginData("originalText", '');
+    }
     figma.ui.postMessage({
       type: "text",
+      msg: node.getPluginData("originalText") || currentText,
     });
   }
   figma.ui.postMessage({
