@@ -151,12 +151,11 @@ function checkSelection() {
   if (node && node.type === "TEXT") {
     figma.ui.postMessage({
       type: "text",
-      msg: node.getPluginData("originalText") || revertText(node["characters"])
     });
   }
   figma.ui.postMessage({
     type: "selectionCount",
-    msg: figma.currentPage.selection.filter(node => node.type === "TEXT").length
+    msg: figma.currentPage.selection.filter((node) => node.type === "TEXT").length,
   });
 }
 let node;
@@ -185,10 +184,10 @@ if (textLayers(figma.currentPage.selection).length && figma.command !== "ui") {
             });
           }
           try {
-            figma.currentPage.selection[0].setRelaunchData({
-              wrap: figma.currentPage.selection[0]["textAutoResize"] !== "WIDTH_AND_HEIGHT" ? "" : undefined,
+            node.setRelaunchData({
               ui: "",
-              reset: ""
+              reset: "",
+              ...(node["textAutoResize"] !== "WIDTH_AND_HEIGHT" ? { wrap: "" } : {}),
             });
           } catch (e) {}
         }
@@ -211,10 +210,10 @@ if (textLayers(figma.currentPage.selection).length && figma.command !== "ui") {
       });
 
       try {
-        figma.currentPage.selection[0].setRelaunchData({
-          wrap: figma.currentPage.selection[0]["textAutoResize"] !== "WIDTH_AND_HEIGHT" ? "" : undefined,
+        node.setRelaunchData({
           ui: "",
-          reset: ""
+          reset: "",
+          ...(node["textAutoResize"] !== "WIDTH_AND_HEIGHT" ? { wrap: "" } : {}),
         });
       } catch (e) {}
       figma.closePlugin("Text Lines Updated");
