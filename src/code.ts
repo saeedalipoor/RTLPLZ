@@ -54,10 +54,8 @@ function revertText(string: string): string {
   return lines.join("\n");
 }
 function prepareForWrap(string: string, tempNode) {
-  tempNode.x = 10000;
-  tempNode.y = 10000;
   tempNode["textAutoResize"] = "HEIGHT";
-  tempNode["opacity"] = 0;
+  tempNode["characters"] = tempNode["characters"].split(" ")[0];
   let tempNodeInitialHeight = tempNode["height"];
   tempNode["characters"] = "";
   return string
@@ -68,15 +66,16 @@ function prepareForWrap(string: string, tempNode) {
         .replace(/\r?\n|\r/g, " ")
         .split(" ")
         .reduce((res, word) => {
+          const nWord = word.replace(/\u00A0+$/, " ");
           const currentLine = res.lastIndexOf("\n") > -1 ? res.slice(res.lastIndexOf("\n") + 1) : res;
-          tempNode["characters"] = [...currentLine, word].join(" ");
+          tempNode["characters"] = [...currentLine, ...(currentLine.length ? [" "] : []), nWord].join("");
           if (tempNode.height > tempNodeInitialHeight) {
-            tempNode["characters"] = word;
-            return [...res.filter((w, i) => !(w === "\n" && i + 1 === res.length)), "\n", word];
+            tempNode["characters"] = nWord;
+            return [...res.filter((w, i) => !(w === "\n" && i + 1 === res.length)), "\n", nWord];
           }
-          return [...res, word];
+          return [...res, ...(res.length ? [" "] : []), nWord];
         }, [])
-        .join(" ")
+        .join("")
         .replace(/\u0020\n/g, "\n")
     )
     .join("\n");
@@ -115,11 +114,13 @@ function handleUI({ type, payload }) {
     case "input":
       const node = figma.currentPage.selection[0];
       node.name = payload;
-      node.setPluginData("originalText", payload);
       if (node["characters"] && isParabic(node["characters"][0]) && node["textAlignHorizontal"] === "LEFT") node["textAlignHorizontal"] = "RIGHT";
       if (!payload || !payload.trim()) {
+        node.setPluginData("originalText", "");
+        node.setRelaunchData({});
         setLayerText(node, "");
       } else {
+        node.setPluginData("originalText", payload);
         if (node["textAutoResize"] === "WIDTH_AND_HEIGHT") {
           setLayerText(node, revertText(payload));
         } else {
@@ -132,14 +133,14 @@ function handleUI({ type, payload }) {
             });
           });
         }
+        try {
+          node.setRelaunchData({
+            ui: "",
+            reset: "",
+            ...(node["textAutoResize"] !== "WIDTH_AND_HEIGHT" ? { wrap: "" } : {}),
+          });
+        } catch (e) {}
       }
-      try {
-        node.setRelaunchData({
-          ui: "",
-          reset: "",
-          ...(node["textAutoResize"] !== "WIDTH_AND_HEIGHT" ? { wrap: "" } : {})
-        });
-      } catch (e) {}
       break;
     default:
       break;
@@ -182,7 +183,6 @@ if (textLayers(figma.currentPage.selection).length && figma.command !== "ui") {
             setLayerText(node, revertText(payload));
           } else {
             let tempNode = node.clone();
-            tempNode.resize(tempNode.width - 15, tempNode.height);
             tempNode["opacity"] = 0;
             setLayerText(tempNode, payload.split("")[0]).then(() => {
               let lines = prepareForWrap(payload, tempNode);
@@ -209,7 +209,6 @@ if (textLayers(figma.currentPage.selection).length && figma.command !== "ui") {
       let tempNode = node.clone();
       const originalText = node.getPluginData("originalText") || revertText(node["characters"]);
       tempNode["opacity"] = 0;
-      tempNode.resize(tempNode.width - 15, tempNode.height);
       setLayerText(tempNode, originalText.split("")[0]).then(() => {
         let lines = prepareForWrap(originalText, tempNode);
         node["characters"] = revertText(lines);
