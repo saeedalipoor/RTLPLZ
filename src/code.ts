@@ -83,6 +83,7 @@ function prepareForWrap(string: string, tempNode) {
 
 async function setLayerText(node: BaseNode, text: string) {
   await loadFonts(node);
+  if (node["characters"] && isParabic(node["characters"][0]) && node["textAlignHorizontal"] === "LEFT") node["textAlignHorizontal"] = "RIGHT";
   node["characters"] = text;
   return text;
 }
@@ -113,8 +114,7 @@ function handleUI({ type, payload }) {
   switch (type) {
     case "input":
       const node = figma.currentPage.selection[0];
-      node.name = payload;
-      if (node["characters"] && isParabic(node["characters"][0]) && node["textAlignHorizontal"] === "LEFT") node["textAlignHorizontal"] = "RIGHT";
+      node.name = payload;      
       if (!payload || !payload.trim()) {
         node.setPluginData("originalText", "");
         node.setRelaunchData({});
@@ -150,12 +150,7 @@ function handleUI({ type, payload }) {
 function checkSelection() {
   const node = figma.currentPage.selection[0];
   if (node && node.type === "TEXT") {
-    const originalText = node.getPluginData("originalText");
-    const currentText = revertText(node["characters"] || '');
-    if(originalText && (originalText.length !== currentText.length || originalText !== currentText)){
-      node.setRelaunchData({});
-      node.setPluginData("originalText", '');
-    }
+    const currentText = revertText(node["characters"] || "");
     figma.ui.postMessage({
       type: "text",
       msg: node.getPluginData("originalText") || currentText,
