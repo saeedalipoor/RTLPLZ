@@ -112,67 +112,18 @@ async function resetLayers(selection: PageNode["selection"]) {
 
 function handleUI({ type, payload }) {
   switch (type) {
-    case "input":
-      const node = figma.currentPage.selection[0];
-      node.name = payload;      
-      if (!payload || !payload.trim()) {
-        node.setPluginData("originalText", "");
-        node.setRelaunchData({});
-        setLayerText(node, "");
-      } else {
-        node.setPluginData("originalText", payload);
-        if (node["textAutoResize"] === "WIDTH_AND_HEIGHT") {
-          setLayerText(node, revertText(payload));
-        } else {
-          let tempNode = node.clone();
-          tempNode["opacity"] = 0;
-          setLayerText(tempNode, payload.split("")[0]).then(() => {
-            let lines = prepareForWrap(payload, tempNode);
-            setLayerText(node, revertText(lines)).then(() => {
-              tempNode.remove();
-            });
-          });
-        }
-        try {
-          node.setRelaunchData({
-            ui: "",
-            reset: "",
-            ...(node["textAutoResize"] !== "WIDTH_AND_HEIGHT" ? { wrap: "" } : {}),
-          });
-        } catch (e) {}
-      }
-      break;
-    default:
-      break;
-  }
-}
-
-function checkSelection() {
-  const node = figma.currentPage.selection[0];
-  if (node && node.type === "TEXT") {
-    const currentText = revertText(node["characters"] || "");
-    figma.ui.postMessage({
-      type: "text",
-      msg: node.getPluginData("originalText") || currentText,
-    });
-  }
-  figma.ui.postMessage({
-    type: "selectionCount",
-    msg: figma.currentPage.selection.filter((node) => node.type === "TEXT").length,
-  });
-}
-let node;
-if (textLayers(figma.currentPage.selection).length && figma.command !== "ui") {
-  switch (figma.command) {
-    case "reset":
-      resetLayers(figma.currentPage.selection).then(() => {
-        figma.closePlugin("Reseted to original");
-      });
-      break;
     case "revert":
-      for (const node of figma.currentPage.selection) {
-        if (node.type === "TEXT") {
-          let payload = node["characters"];
+      revert(false);
+      break;
+    case "input":
+      const node = textLayers(figma.currentPage.selection)[0];
+      if (node.type === "TEXT") {
+        node.name = payload;
+        if (!payload || !payload.trim()) {
+          node.setPluginData("originalText", "");
+          node.setRelaunchData({});
+          setLayerText(node, "");
+        } else {
           node.setPluginData("originalText", payload);
           if (node["textAutoResize"] === "WIDTH_AND_HEIGHT") {
             setLayerText(node, revertText(payload));
@@ -181,8 +132,9 @@ if (textLayers(figma.currentPage.selection).length && figma.command !== "ui") {
             tempNode["opacity"] = 0;
             setLayerText(tempNode, payload.split("")[0]).then(() => {
               let lines = prepareForWrap(payload, tempNode);
-              node["characters"] = revertText(lines);
-              tempNode.remove();
+              setLayerText(node, revertText(lines)).then(() => {
+                tempNode.remove();
+              });
             });
           }
           try {
@@ -194,10 +146,76 @@ if (textLayers(figma.currentPage.selection).length && figma.command !== "ui") {
           } catch (e) {}
         }
       }
-      if (textLayers(figma.currentPage.selection)) {
-        figma.closePlugin("Layer" + (figma.currentPage.selection.filter(n => n.type === "TEXT").length > 1 ? "s " : " ") + "Updated");
+      break;
+    default:
+      break;
+  }
+}
+
+function checkSelection() {
+  const node = figma.currentPage.selection[0];
+  if (node && node.type === "TEXT") {
+    let currentText = revertText(node["characters"] || "");
+    if (node.getPluginData("originalText") && node.getPluginData("originalText").length === currentText.length) {
+      figma.ui.postMessage({
+        type: "text",
+        msg: node.getPluginData("originalText"),
+      });
+    } else {
+      node.setPluginData("originalText", "");
+      figma.ui.postMessage({
+        type: "text",
+        msg: currentText,
+      });
+    }
+  }
+  figma.ui.postMessage({
+    type: "selectionCount",
+    msg: figma.currentPage.selection.filter((node) => node.type === "TEXT").length,
+  });
+}
+function revert(close = true) {
+  for (const node of figma.currentPage.selection) {
+    if (node.type === "TEXT") {
+      let payload = node["characters"];
+      node.setPluginData("originalText", payload);
+      if (node["textAutoResize"] === "WIDTH_AND_HEIGHT") {
+        setLayerText(node, revertText(payload));
+      } else {
+        let tempNode = node.clone();
+        tempNode["opacity"] = 0;
+        setLayerText(tempNode, payload.split("")[0]).then(() => {
+          let lines = prepareForWrap(payload, tempNode);
+          node["characters"] = revertText(lines);
+          tempNode.remove();
+        });
       }
-      figma.closePlugin("");
+      try {
+        node.setRelaunchData({
+          ui: "",
+          reset: "",
+          ...(node["textAutoResize"] !== "WIDTH_AND_HEIGHT" ? { wrap: "" } : {}),
+        });
+      } catch (e) {}
+    }
+  }
+  if (close) {
+    if (textLayers(figma.currentPage.selection)) {
+      figma.closePlugin("Layer" + (figma.currentPage.selection.filter((n) => n.type === "TEXT").length > 1 ? "s " : " ") + "Updated");
+    }
+    figma.closePlugin("");
+  }
+}
+let node;
+if (textLayers(figma.currentPage.selection).length && figma.command !== "ui") {
+  switch (figma.command) {
+    case "reset":
+      resetLayers(figma.currentPage.selection).then(() => {
+        figma.closePlugin("Reseted to original");
+      });
+      break;
+    case "revert":
+      revert();
       break;
     case "wrap":
       node = figma.currentPage.selection[0];
