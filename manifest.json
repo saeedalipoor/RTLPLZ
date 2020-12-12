@@ -1,0 +1,42 @@
+{
+  "name": "RTLPLZ",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html",
+  "menu": [
+    {
+      "name": "RTLPLZ Editor",
+      "command": "ui"
+    },
+    {
+      "name": "RTLPLZ Revert",
+      "command": "revert"
+    },
+    {
+      "name": "RTLPLZ Wrap",
+      "command": "wrap"
+    },
+    {
+      "separator": true
+    },
+    {
+      "name": "Reset to original text",
+      "command": "reset"
+    }
+  ],
+  "relaunchButtons": [
+    {
+      "command": "ui",
+      "name": "Open RTLPLZ Editor"
+    },
+    {
+      "command": "wrap",
+      "name": "Update Wrap"
+    },
+    {
+      "command": "reset",
+      "name": "Reset to original text",
+      "multipleSelection": true
+    }
+  ]
+}
