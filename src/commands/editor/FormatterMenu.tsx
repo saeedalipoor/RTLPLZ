@@ -1,7 +1,7 @@
 /** @jsx h */
 
 import { IconCross32, Text } from '@create-figma-plugin/ui';
-import { addCommas, digitsEnToFa, digitsFaToEn, numberToWords } from "@persian-tools/persian-tools";
+import { digitsFaToEn, numberToWords } from "@persian-tools/persian-tools";
 import clsx from 'clsx';
 import jss from 'jss';
 import jssPluginCamelCase from 'jss-plugin-camel-case';
@@ -45,13 +45,13 @@ const { classes } = jss
 
 function FormatterMenu({ string: string, className, ['class']: clsname, onSelect, onClose, ...rest }: Props<HTMLDivElement, { string: string, onClose?: () => void, onSelect?: (value: string) => void }>): JSX.Element {
   if (!string || !string.trim()) return <Fragment />;
-  const raw = digitsFaToEn(string).toString().replace(/[^\d]/g, '')// || wordsToNumber(string.replace(/^(هزار)/, 'یک هزار')).toString();
+  const raw = isNaN(Number(string)) ? digitsFaToEn(string).toString().replace(/[^\d]/g, '') : Number(string).toString()// || wordsToNumber(string.replace(/^(هزار)/, 'یک هزار')).toString();
   if (!raw || !raw.trim() || isNaN(Number(raw))) return <Fragment />;
   const formatters = [
-    (string: string): string => addCommas(digitsFaToEn(string)),
+    (string: string): string => Number(digitsFaToEn(string)).toLocaleString(),
     (string: string): string => digitsFaToEn(string),
-    (string: string): string => digitsEnToFa(addCommas(digitsFaToEn(string)).replace(/,/g, '٬')),
-    (string: string): string => digitsEnToFa(digitsFaToEn(string)),
+    (string: string): string => Number(string).toLocaleString('fa-ir'),
+    (string: string): string => Number(string).toLocaleString('fa-ir', { useGrouping: false }),
     (string: string): string => {
       let result;
       try {
@@ -70,7 +70,6 @@ function FormatterMenu({ string: string, className, ['class']: clsname, onSelect
 
       <div class={classes.buttons}>
         {formatters.map(fn => {
-          console.log(fn(raw), string)
           if (fn(raw) === string || !fn(raw).length) return null;
           return (
             <button class={classes.button} onClick={() => onSelect?.(fn(raw))}>{fn(raw)}</button>
