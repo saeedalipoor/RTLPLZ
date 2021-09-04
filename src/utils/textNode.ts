@@ -98,9 +98,7 @@ export const writeToNode = async ({
 
   let pluginData = getRTLPLZData(node);
   if (figma.editorType === 'figma' && (node.name === pluginData.original || node.name === (node as TextNode).characters || (node as TextNode).autoRename)) {
-    const autoRenameStatus = Boolean((node as TextNode).autoRename);
     node.name = newData.original || newData.current;
-    (node as TextNode).autoRename = autoRenameStatus;
   }
 
   setRelaunchButtons(node, ["ui", "wrap"]);
