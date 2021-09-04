@@ -140,7 +140,7 @@ const typeOfChar = (char: string): 'rtl' | 'ltr' | 'neutral' | undefined => {
 const processLine = (line: string): string => {
   if (is.ltr(line)) return line;
   let result: string[] = [];
-  let lineDir = line.indexOf(figfa) === 0 ? 'rtl' : typeOfChar(line.split("").find(c => !is.neutral(c) && !is.faArDigit(c) && !c.match(/[0-9]/g)) || '');
+  let lineDir = line.indexOf(figfa) === 0 ? 'rtl' : typeOfChar(line.split("").find(c => !(is.bracket(c) || is.neutral(c) || is.faArDigit(c) || c.match(/[0-9]/g))) || '');
   const rawLine = line.replace(figfa, '');
   let dir = String(lineDir);
   let lastChar: [string, number] = ['', 0];
@@ -248,7 +248,7 @@ const isLastItem = (index: number, length: number) => index === length - 1;
 const figfa = 'فیگفا';
 
 const wrapLines = (characters: string, node: TextNode) => {
-  if(node.type !== "TEXT") return characters;
+  if (node.type !== "TEXT") return characters;
   let tempNode = node.clone();
   tempNode["textAutoResize"] = "HEIGHT";
   tempNode["characters"] = characters[0];
