@@ -6,7 +6,7 @@ import jss from 'jss';
 import jssPluginCamelCase from 'jss-plugin-camel-case';
 import jssPluginNested from 'jss-plugin-nested';
 import { createRef, Fragment, h, JSX } from 'preact';
-import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
+import { useCallback, useLayoutEffect, useMemo, useState } from 'preact/hooks';
 import Textfield from '../../../components/TextField';
 import { useDataState } from '../../../dataContext';
 import { emit } from '../../../utils';
@@ -58,7 +58,7 @@ function BatchEditor(): JSX.Element {
   const { selectedTextsForBatchEdit, selectedTextNodes } = useDataState();
   const [trapActivated, setTrapActivated] = useState(false);
   const [sortTopLeft, setSortTopLeft] = useState(false)
-  useEffect(() => {
+  useLayoutEffect(() => {
     focusTrap = createFocusTrap(container.current, {
       allowOutsideClick: true,
       escapeDeactivates: false,
@@ -95,7 +95,7 @@ function BatchEditor(): JSX.Element {
             onInput={handleInput(node.id)}
             extraActions={batchEditNodes.length > 1 ? [
               {
-                label: `Apply to ${batchEditNodes.length - 1} layers`,
+                label: `Apply to ${batchEditNodes.length - 1} other selected ${pluralize(batchEditNodes.length - 1, 'layer', 'layers')}`,
                 onClick: (value) => emit("EDITOR_TEXT_CHANGE", { value })
               }
             ] : undefined}
@@ -104,13 +104,13 @@ function BatchEditor(): JSX.Element {
       </div>
       {batchEditNodes.length > 0 &&
         <StatusBar className={classes.statusBar}>
-          <div><span class="hidden-xs">Batch editing</span><span>{batchEditNodes.length} {pluralize(batchEditNodes.length, 'layer', 'layers')} {batchEditNodes.length === 1 && '🤨'}</span></div>
-          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }} onClick={() => setSortTopLeft(!sortTopLeft)}>
+          <div><span class="hidden-xs">Batch editing</span><span>{batchEditNodes.length} {pluralize(batchEditNodes.length, 'layer 🤨', 'layers')}</span></div>
+          {batchEditNodes.length > 1 && <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }} onClick={() => setSortTopLeft(!sortTopLeft)}>
             <span class="hidden-xs">sort by postion</span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ transform: `rotateY(${sortTopLeft ? '0' : '180deg'})` }}>
               <path d="M4.42426 3.57574C4.18995 3.34142 3.81005 3.34142 3.57574 3.57574C3.34142 3.81005 3.34142 4.18995 3.57574 4.42426L4.42426 3.57574ZM12 12.6C12.3314 12.6 12.6 12.3314 12.6 12V6.6C12.6 6.26863 12.3314 6 12 6C11.6686 6 11.4 6.26863 11.4 6.6V11.4H6.6C6.26863 11.4 6 11.6686 6 12C6 12.3314 6.26863 12.6 6.6 12.6H12ZM3.57574 4.42426L11.5757 12.4243L12.4243 11.5757L4.42426 3.57574L3.57574 4.42426Z" fill="black" />
             </svg>
-          </div>
+          </div>}
         </StatusBar>
       }
     </div>

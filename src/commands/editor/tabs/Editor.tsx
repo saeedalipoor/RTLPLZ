@@ -6,7 +6,7 @@ import jss from 'jss';
 import jssPluginCamelCase from 'jss-plugin-camel-case';
 import jssPluginNested from 'jss-plugin-nested';
 import { createRef, h, JSX } from 'preact';
-import { StateUpdater, useCallback, useEffect, useState } from 'preact/hooks';
+import { StateUpdater, useCallback, useLayoutEffect, useState } from 'preact/hooks';
 import IconReverse16 from '../../../components/IconReverse16';
 import Textfield from '../../../components/TextField';
 import { useDataState } from '../../../dataContext';
@@ -57,7 +57,8 @@ const { classes } = jss
         color: 'var(--color-black-80)'
       },
       '& small': {
-        height: 18
+        height: '1rem',
+        fontSize: '0.78rem'
       },
       '&:not(:hover)': {
         '& small': {
@@ -73,12 +74,12 @@ function Editor(): JSX.Element {
   const { selectedTextNodes, settings } = useDataState();
   const [firstFocused, setFirstFocused] = useState(false)
   const [formatMenuString, setFormatMenuString]: [[string, number, number], StateUpdater<[string, number, number]>] = useState(['', 0, 0])
-  useEffect(() => {
-    if ((!firstFocused || settings?.autoFocusOnSelectionChange) && inputRef.current && !document.hasFocus()) {
-      setTimeout(() => {
-        inputRef.current.focus();
-        if (!firstFocused) setFirstFocused(true);
-      }, 100);
+  useLayoutEffect(() => {
+    if (!firstFocused) {
+      setFirstFocused(true);
+      inputRef.current?.focus();
+    } else if (settings?.autoFocusOnSelectionChange && inputRef.current && !document.hasFocus()) {
+      inputRef.current?.focus();
     }
   }, [selectedTextNodes]);
   const handleInput = useCallback(
@@ -107,7 +108,6 @@ function Editor(): JSX.Element {
   )
   const handleSelect = useCallback(
     (e: JSX.TargetedEvent<HTMLTextAreaElement>) => {
-      // console.log(e.currentTarget.selectionStart, e.currentTarget.selectionEnd, e.currentTarget.selectionDirection)
       setFormatMenuString([e.currentTarget.value.slice(e.currentTarget.selectionStart, e.currentTarget.selectionEnd), e.currentTarget.selectionStart, e.currentTarget.selectionEnd])
     },
     []
@@ -152,7 +152,7 @@ function Editor(): JSX.Element {
           bottomActions={[
             {
               label: <div class={classes.reverseButton}><IconReverse16 width="24" height="24" /><small>Reverse text</small></div>,
-              onClick: e => {e.stopPropagation();emit('REVERSE')}
+              onClick: e => { e.stopPropagation(); emit('REVERSE') }
             }
           ]}
         />

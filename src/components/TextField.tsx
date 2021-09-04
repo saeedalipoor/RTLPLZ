@@ -7,7 +7,7 @@ import jssPluginCamelCase from 'jss-plugin-camel-case';
 import jssPluginNested from 'jss-plugin-nested';
 import { ComponentChildren, h, JSX, RefObject } from 'preact';
 import { forwardRef } from 'preact/compat';
-import { useCallback, useEffect, useRef } from 'preact/hooks';
+import { useCallback, useLayoutEffect, useRef } from 'preact/hooks';
 import { defaultPlaceholder } from '../constants';
 import { mergerefs } from '../utils';
 import is from '../utils/is';
@@ -162,18 +162,18 @@ const TextField = forwardRef((props: Props<HTMLTextAreaElement, TextFieldProps>,
   const handleInput = useCallback(
     (e: JSX.TargetedEvent<HTMLTextAreaElement>) => {
       if (e.currentTarget.parentElement) e.currentTarget.parentElement.dataset.value = e.currentTarget.value;
-      e.currentTarget.dir = is.rtl(e.currentTarget.value.split("").find(c => !is.neutral(c) && !is.faArDigit(c) && !c.match(/[0-9]/g)) || '') ? 'rtl' : 'ltr'
+      e.currentTarget.dir = is.rtl(e.currentTarget.value.split("").find(c => !(is.bracket(c) || is.neutral(c) || is.faArDigit(c) || c.match(/[0-9]/g))) || '') ? 'rtl' : 'ltr'
       // @ts-ignore
       onInput?.(e);
     },
     [onInput],
   )
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (inputRef.current && inputRef.current !== document.activeElement) {
       if (inputRef.current.value !== value) {
         inputRef.current.value = String(value);
-        inputRef.current.dir = is.rtl(String(value)?.split("").find(c => !is.neutral(c) && !is.faArDigit(c) && !c.match(/[0-9]/g)) || '') ? 'rtl' : 'ltr'
+        inputRef.current.dir = is.rtl(String(value)?.split("").find(c => !(is.bracket(c) || is.neutral(c) || is.faArDigit(c) || c.match(/[0-9]/g))) || '') ? 'rtl' : 'ltr'
       }
       if (active && inputRef.current && !document.hasFocus()) {
         inputRef.current.scrollIntoView();
