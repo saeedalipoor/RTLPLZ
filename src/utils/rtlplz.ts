@@ -194,9 +194,9 @@ const processLine = (line: string): string => {
           } else {
             result.push(character);
             lastChar = [character, result.length];
-            dir = 'rtl';
           }
         }
+        dir = 'rtl';
         continue;
       case 'ltr':
         if (lineDir === 'ltr') {
@@ -206,7 +206,6 @@ const processLine = (line: string): string => {
           if (dir === 'rtl') {
             result.unshift(character);
             lastChar = [character, 0];
-            dir = 'ltr';
           } else {
             if (is.neutral(lastChar[0]) && lastChar[1] === 0) {
               result.unshift(character);
@@ -217,6 +216,7 @@ const processLine = (line: string): string => {
             }
           }
         }
+        dir = 'ltr';
         continue
       case 'neutral':
         if (lineDir === 'rtl') {
