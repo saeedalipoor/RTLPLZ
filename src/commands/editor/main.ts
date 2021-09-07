@@ -105,5 +105,8 @@ export default async function editor() {
   // } else {
   //   changeTab('editor');
   // }
-  showUI(windowSize.initial, { ...data.getData(), settings: await loadSettingsAsync(defaultPluginSetting), editorType: figma.editorType, fontsList: (await figma.listAvailableFontsAsync()).reduce((res: string[], font: Font) => res.includes(font.fontName.family) || font.fontName.style !== 'Regular' ? res : [...res, font.fontName.family], []) } as PluginData)
+  showUI(windowSize.initial, { ...data.getData(), settings: await loadSettingsAsync(defaultPluginSetting), editorType: figma.editorType, fontsList: (await figma.listAvailableFontsAsync()).reduce((res: string[], font: Font) => res.includes(font.fontName.family) || font.fontName.style !== 'Regular' ? res : [...res, font.fontName.family], []) } as PluginData);
+  figma.root.setRelaunchData({
+    ui: ''
+  });
 }
