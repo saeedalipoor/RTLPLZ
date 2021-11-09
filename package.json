@@ -1,0 +1,79 @@
+{
+  "name": "rtlplz",
+  "version": "1.0.0",
+  "keywords": [
+    "create-figma-plugin",
+    "figma",
+    "figma-plugin"
+  ],
+  "license": "MIT",
+  "author": "Saeed Alipoor",
+  "dependencies": {
+    "@create-figma-plugin/ui": "^1.7.1",
+    "@create-figma-plugin/utilities": "^1.7.1",
+    "@persian-tools/persian-tools": "^1.8.0-beta.0",
+    "clsx": "^1.1.1",
+    "focus-trap": "^6.6.1",
+    "jss": "^10.7.1",
+    "jss-plugin-camel-case": "^10.7.1",
+    "jss-plugin-global": "^10.7.1",
+    "jss-plugin-nested": "^10.7.1",
+    "jss-preset-default": "^10.7.1",
+    "preact": "^10",
+    "string-similarity": "^4.0.4",
+    "styled-jss": "^2.2.3"
+  },
+  "devDependencies": {
+    "@create-figma-plugin/build": "^1.7.1",
+    "@create-figma-plugin/tsconfig": "^1.7.1",
+    "@figma/plugin-typings": "^1.37.0",
+    "typescript": "^4.6.0-dev.20211103"
+  },
+  "scripts": {
+    "build": "build-figma-plugin --typecheck --minify",
+    "watch": "build-figma-plugin --typecheck --watch"
+  },
+  "figma-plugin": {
+    "id": "rtlplz",
+    "name": "RTL PLZ",
+    "editorType": [
+      "figma",
+      "figjam"
+    ],
+    "menu": [
+      {
+        "name": "RTLPLZ Editor",
+        "main": "src/commands/editor/main.ts",
+        "ui": "src/commands/editor/ui.tsx"
+      },
+      {
+        "name": "RTLPLZ Reverse",
+        "main": "src/commands/reverse/main.ts"
+      },
+      {
+        "name": "RTLPLZ Rewrap",
+        "main": "src/commands/rewrap/main.ts"
+      },
+      "-",
+      {
+        "name": "Reset to original text",
+        "main": "src/commands/reset/main.ts"
+      }
+    ],
+    "relaunchButtons": {
+      "ui": {
+        "name": "Open RTLPLZ Editor",
+        "main": "src/commands/editor/main.ts",
+        "ui": "src/commands/editor/ui.tsx"
+      },
+      "wrap": {
+        "name": "RTLPLZ Rewrap",
+        "main": "src/commands/rewrap/main.ts"
+      },
+      "reset": {
+        "name": "Reset to original text",
+        "main": "src/commands/reset/main.ts"
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "extends": "@create-figma-plugin/tsconfig",
+  "compilerOptions": {
+    "typeRoots": ["node_modules/@figma", "node_modules/@types"],
+    "downlevelIteration": true,
+    "lib": ["ES2021"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
+}
